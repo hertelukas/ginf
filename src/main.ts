@@ -7,6 +7,7 @@ import App from "./App.vue";
 
 /* Primevue Components */
 import Button from "primevue/button";
+import Dialog from "primevue/dialog"
 
 /* Styling */
 import "primeflex/primeflex.css"
@@ -68,4 +69,5 @@ app
         }
     })
     .component("Button", Button)
+    .component("Dialog", Dialog)
     .mount("#app");
