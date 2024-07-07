@@ -13,7 +13,7 @@ impl Config {
             Err(_error) => panic!("Could not read from config."),
         };
 
-        let config: Config = match serde_json::from_str(&config) {
+        let config: Config = match toml::from_str(&config) {
             Ok(content) => content,
             Err(_error) => panic!("Config parsing failed."),
         };
@@ -23,7 +23,7 @@ impl Config {
 
     fn config_path() -> PathBuf {
         if let Some(config_dir) = dirs::config_dir() {
-            config_dir.join("ginf").join("config.json")
+            config_dir.join("ginf").join("config.toml")
         } else {
             panic!("Config directory not found.")
         }

@@ -1083,9 +1083,9 @@ dependencies = [
  "rand 0.8.5",
  "rusqlite",
  "serde",
- "serde_json",
  "tauri",
  "tauri-build",
+ "toml 0.8.14",
 ]
 
 [[package]]
