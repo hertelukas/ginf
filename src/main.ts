@@ -7,6 +7,7 @@ import App from "./App.vue";
 
 /* Primevue Components */
 import Button from "primevue/button";
+import ToggleButton from "primevue/togglebutton";
 import Dialog from "primevue/dialog"
 
 /* Styling */
@@ -70,4 +71,5 @@ app
     })
     .component("Button", Button)
     .component("Dialog", Dialog)
+    .component("ToggleButton", ToggleButton)
     .mount("#app");
