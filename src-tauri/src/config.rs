@@ -4,7 +4,10 @@ use dirs;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Config {}
+pub struct Config {
+    folder: String,
+    pub tags: Vec<String>,
+}
 
 impl Config {
     pub fn new() -> Self {

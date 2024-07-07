@@ -1,14 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod config;
 mod db;
 mod handler;
-mod config;
 use std::sync::Mutex;
 
-use log::info;
 use handler::Handler;
-use tauri::Manager;
+use log::info;
+use tauri::{Manager, State};
 
 #[tauri::command]
 fn add_tag(tag: &str) -> Result<(), String> {
@@ -17,16 +17,19 @@ fn add_tag(tag: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn get_tags() -> Result<Vec<String>, String> {
-    Ok(Vec::<String>::new())
+fn get_tags(handler: State<Mutex<Handler>>) -> Result<Vec<String>, String> {
+    match handler.lock() {
+        Ok(hd) => Ok(hd.get_tags()),
+        Err(_) => Err("Could not lock handler".to_string()),
+    }
 }
 
 fn main() {
     env_logger::init();
     tauri::Builder::default()
         .setup(|app| {
-            let mgr = Handler::new();
-            app.manage(Mutex::new(mgr));
+            let handler = Handler::new();
+            app.manage(Mutex::new(handler));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![add_tag, get_tags])
