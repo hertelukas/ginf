@@ -31,4 +31,8 @@ impl Config {
             panic!("Config directory not found.")
         }
     }
+
+    pub fn db_path(&self) -> PathBuf {
+        PathBuf::from(&self.folder).join("files.sqlite")
+    }
 }
