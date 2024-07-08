@@ -41,6 +41,7 @@ function submit() {
 // Reset state on open
 watch(model.value, (value) => {
     if (value.visible) {
+        file.value = ""
         invoke("get_tags")
             .then((loaded) => {
                 tags = loaded;
