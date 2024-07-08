@@ -8,8 +8,8 @@ const visible = ref(false);
 const checked = ref(false);
 const file = ref("");
 
-const tags = ["one", "two", "three"];
-const active = ref([false, false, false])
+let tags = [];
+const active = ref([])
 
 async function openFilePicker() {
     const selected = await open({
@@ -37,6 +37,16 @@ function submit() {
         // TODO handle error
         .catch((err) => console.error(err));
 }
+
+invoke("get_tags")
+    .then((loaded) => {
+        tags = loaded;
+        active.value = [];
+        for (let i = 0; i < tags.length; i++) {
+            active.value.push(false);
+        }
+    })
+    .catch((err) => console.error(err));
 </script>
 
 <template>
