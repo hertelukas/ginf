@@ -7,7 +7,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 const model = defineModel<{ visible: boolean }>();
 const file = ref("");
 
-let tags = [];
+const tags = ref([]);
 const active = ref([])
 
 async function openFilePicker() {
@@ -23,14 +23,14 @@ async function openFilePicker() {
 function submit() {
     model.value.visible = false;
     let tags_to_submit = [];
-    for (let i = 0; i < tags.length; i++) {
+    for (let i = 0; i < tags.value.length; i++) {
         if (active.value[i]) {
-            tags_to_submit.push(tags[i]);
+            tags_to_submit.push(tags.value[i]);
         }
     }
     invoke("import", {
         path: file.value,
-        tags: tags,
+        tags: tags_to_submit,
     })
         .then(() => console.log("Imported"))
         // TODO handle error
@@ -44,9 +44,9 @@ watch(model.value, (value) => {
         file.value = ""
         invoke("get_tags")
             .then((loaded) => {
-                tags = loaded;
+                tags.value = loaded;
                 active.value = [];
-                tags.forEach((_) => active.value.push(false));
+                tags.value.forEach((_) => active.value.push(false));
             })
             .catch((err) => console.error(err));
     }

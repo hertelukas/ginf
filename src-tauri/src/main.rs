@@ -18,10 +18,16 @@ fn add_tag(tag: &str) -> Result<(), String> {
 
 #[tauri::command]
 fn get_tags(handler: State<Mutex<Handler>>) -> Result<Vec<String>, String> {
+    info!("Loading tags");
     match handler.lock() {
         Ok(hd) => Ok(hd.get_tags()),
         Err(_) => Err("Could not lock handler".to_string()),
     }
+}
+
+#[tauri::command]
+fn import(path: String, tags: Vec<String>) {
+    info!("Importing file {:?} with tags {:?}", path, tags);
 }
 
 fn main() {
@@ -29,10 +35,11 @@ fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let handler = Handler::new();
+            info!("Running in {}", handler.get_folder());
             app.manage(Mutex::new(handler));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![add_tag, get_tags])
+        .invoke_handler(tauri::generate_handler![add_tag, get_tags, import])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

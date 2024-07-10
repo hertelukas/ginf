@@ -21,4 +21,8 @@ impl Handler {
     pub fn get_tags(&self) -> Vec<String> {
         self.config.tags.clone()
     }
+
+    pub fn get_folder(&self) -> String {
+        self.config.folder.clone()
+    }
 }
