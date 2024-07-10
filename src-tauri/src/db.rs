@@ -7,7 +7,7 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new(path: PathBuf) -> Self {
+    pub fn open(path: PathBuf) -> Self {
         Database {
             connection: Connection::open(path).expect("Failed to create database"),
         }
