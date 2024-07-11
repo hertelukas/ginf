@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::config::Config;
 use crate::db::Database;
 
@@ -15,6 +17,7 @@ impl Handler {
                 config,
             };
         }
+        info!("No database exists yet");
         Handler { db: None, config }
     }
 

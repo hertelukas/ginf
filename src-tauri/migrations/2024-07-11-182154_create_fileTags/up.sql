@@ -1,0 +1,8 @@
+-- Your SQL goes here
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS fileTags (
+  file_id INTEGER,
+  tag_id INTEGER,
+  CONSTRAINT fk_file FOREIGN KEY (file_id) REFERENCES files(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
