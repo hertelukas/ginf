@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use crate::models::*;
+use crate::DbPool;
 use diesel::connection::SimpleConnection;
 use diesel::prelude::*;
 use diesel::r2d2::ConnectionManager;
@@ -30,7 +31,7 @@ impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for ConnectionOp
     }
 }
 
-pub fn establish_connection_pool(path: PathBuf) -> Pool<ConnectionManager<SqliteConnection>> {
+pub fn establish_connection_pool(path: PathBuf) -> DbPool {
     let manager = ConnectionManager::<SqliteConnection>::new(path.to_string_lossy());
     Pool::builder()
         .connection_customizer(Box::new(ConnectionOptions {
@@ -41,14 +42,14 @@ pub fn establish_connection_pool(path: PathBuf) -> Pool<ConnectionManager<Sqlite
         .expect("Could not build connection pool")
 }
 
-pub fn run_migrations(pool: &Pool<ConnectionManager<SqliteConnection>>) {
+pub fn run_migrations(pool: &DbPool) {
     pool.get()
         .expect("Could not get connection for migrations")
         .run_pending_migrations(MIGRATIONS)
         .expect("Migration failed");
 }
 
-pub fn get_tags(pool: &Pool<ConnectionManager<SqliteConnection>>) -> Vec<String> {
+pub fn get_tags(pool: &DbPool) -> Vec<String> {
     use crate::schema::tags::dsl::*;
     let connection = &mut pool.get().unwrap();
 
