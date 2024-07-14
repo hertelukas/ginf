@@ -1,16 +1,16 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    fileTags (rowid) {
+    file_tags (rowid) {
         rowid -> Integer,
-        file_id -> Nullable<Integer>,
-        tag_id -> Nullable<Integer>,
+        file_id -> Integer,
+        tag_id -> Integer,
     }
 }
 
 diesel::table! {
     files (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         path -> Text,
         name -> Text,
     }
@@ -18,16 +18,16 @@ diesel::table! {
 
 diesel::table! {
     tags (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         tag -> Text,
     }
 }
 
-diesel::joinable!(fileTags -> files (file_id));
-diesel::joinable!(fileTags -> tags (tag_id));
+diesel::joinable!(file_tags -> files (file_id));
+diesel::joinable!(file_tags -> tags (tag_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    fileTags,
+    file_tags,
     files,
     tags,
 );
