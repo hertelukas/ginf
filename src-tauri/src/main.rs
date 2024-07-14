@@ -3,12 +3,17 @@
 
 mod config;
 mod db;
-mod handler;
-use std::sync::Mutex;
+pub mod models;
+pub mod schema;
 
-use handler::Handler;
+use diesel::{
+    r2d2::{ConnectionManager, Pool},
+    SqliteConnection,
+};
 use log::info;
 use tauri::{Manager, State};
+
+type DbPool = Pool<ConnectionManager<SqliteConnection>>;
 
 #[tauri::command]
 fn add_tag(tag: &str) -> Result<(), String> {
@@ -17,12 +22,9 @@ fn add_tag(tag: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn get_tags(handler: State<Mutex<Handler>>) -> Result<Vec<String>, String> {
+fn get_tags(pool: State<DbPool>) -> Result<Vec<String>, String> {
     info!("Loading tags");
-    match handler.lock() {
-        Ok(hd) => Ok(hd.get_tags()),
-        Err(_) => Err("Could not lock handler".to_string()),
-    }
+    Ok(db::get_tags(&pool))
 }
 
 #[tauri::command]
@@ -34,9 +36,11 @@ fn main() {
     env_logger::init();
     tauri::Builder::default()
         .setup(|app| {
-            let handler = Handler::new();
-            info!("Running in {}", handler.get_folder());
-            app.manage(Mutex::new(handler));
+            let config = config::Config::new();
+            let db_pool = db::establish_connection_pool(config.db_path());
+            db::run_migrations(&db_pool);
+            info!("Running in {}", config.folder);
+            app.manage(db_pool);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![add_tag, get_tags, import])

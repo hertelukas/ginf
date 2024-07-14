@@ -12,7 +12,7 @@ tauri-build = { version = "1", features = [] }
 
 [dependencies]
 tauri = { version = "1", features = [ "fs-read-dir", "path-all", "dialog-open", "shell-open"] }
-diesel = {version = "2.2", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel = {version = "2.2", features = ["sqlite", "returning_clauses_for_sqlite_3_35", "r2d2"] }
 diesel_migrations = {version = "2.2"}
 libsqlite3-sys = {version = "0.28", features = ["bundled"] }
 serde = { version = "1", features = ["derive"] }
