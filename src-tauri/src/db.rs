@@ -43,13 +43,14 @@ pub fn establish_connection_pool(path: PathBuf) -> DbPool {
 }
 
 pub fn run_migrations(pool: &DbPool) {
+    info!("Running migrations...");
     pool.get()
         .expect("Could not get connection for migrations")
         .run_pending_migrations(MIGRATIONS)
         .expect("Migration failed");
 }
 
-pub fn get_tags(pool: &DbPool) -> Vec<String> {
+pub fn get_tags(pool: &DbPool) -> Result<Vec<String>, String> {
     use crate::schema::tags::dsl::*;
     let connection = &mut pool.get().unwrap();
 
@@ -58,13 +59,58 @@ pub fn get_tags(pool: &DbPool) -> Vec<String> {
         .load(connection)
         .expect("Error loading tags");
 
-    info!("Loaded tags:");
-    for t in results {
-        info!("{}", t.tag);
-    }
+    info!(
+        "Loaded tags: {:?}",
+        results
+            .iter()
+            .map(|t| t.tag.clone())
+            .collect::<Vec<String>>()
+    );
 
-    results
+    Ok(results
         .iter()
         .map(|t| t.tag.clone())
-        .collect::<Vec<String>>()
+        .collect::<Vec<String>>())
+}
+
+pub fn get_tag(tag_name: &String, pool: &DbPool) -> Result<Tag, String> {
+    use crate::schema::tags::dsl::*;
+    let connecton = &mut pool.get().unwrap();
+
+    let result = tags
+        .filter(tag.eq(tag_name))
+        .select(Tag::as_select())
+        .first(connecton)
+        .expect("Error loading tag");
+
+    Ok(result)
+}
+
+pub fn insert_file(
+    relative_path: &String,
+    name: &String,
+    tags: &Vec<String>,
+    pool: &DbPool,
+) -> Result<(), String> {
+    use crate::schema::file_tags;
+    use crate::schema::files;
+    let connection = &mut pool.get().unwrap();
+
+    // Somewhat ugly: We just ignore when we fail to get a tag
+    let tags: Vec<Tag> = tags.iter().filter_map(|t| get_tag(t, pool).ok()).collect();
+
+    let file = diesel::insert_into(files::table)
+        .values((files::path.eq(relative_path), files::name.eq(name)))
+        .returning(File::as_returning())
+        .get_result(connection)
+        .expect("Failed to insert file");
+
+    for tag in tags {
+        diesel::insert_into(file_tags::table)
+            .values((file_tags::file_id.eq(file.id), file_tags::tag_id.eq(tag.id)))
+            .execute(connection)
+            .expect("Failed to isnert file_tag");
+    }
+
+    Ok(())
 }
