@@ -10,6 +10,7 @@ use diesel::r2d2::Pool;
 use diesel::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use log::info;
+use log::warn;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -54,10 +55,13 @@ pub fn get_tags(pool: &DbPool) -> Result<Vec<String>, String> {
     use crate::schema::tags::dsl::*;
     let connection = &mut pool.get().unwrap();
 
-    let results = &tags
-        .select(Tag::as_select())
-        .load(connection)
-        .expect("Error loading tags");
+    let results = match tags.select(Tag::as_select()).load(connection) {
+        Ok(res) => res,
+        Err(e) => {
+            warn!("Getting tags failed: {:?}", e);
+            return Err(format!("Getting tags failed."));
+        }
+    };
 
     info!(
         "Loaded tags: {:?}",
@@ -77,11 +81,17 @@ pub fn get_tag(tag_name: &String, pool: &DbPool) -> Result<Tag, String> {
     use crate::schema::tags::dsl::*;
     let connecton = &mut pool.get().unwrap();
 
-    let result = tags
+    let result = match tags
         .filter(tag.eq(tag_name))
         .select(Tag::as_select())
         .first(connecton)
-        .expect("Error loading tag");
+    {
+        Ok(res) => res,
+        Err(e) => {
+            warn!("Getting tag {tag_name} failed: {:?}", e);
+            return Err(format!("Getting {tag_name} failed."));
+        }
+    };
 
     Ok(result)
 }
@@ -99,17 +109,29 @@ pub fn insert_file(
     // Somewhat ugly: We just ignore when we fail to get a tag
     let tags: Vec<Tag> = tags.iter().filter_map(|t| get_tag(t, pool).ok()).collect();
 
-    let file = diesel::insert_into(files::table)
+    let file = match diesel::insert_into(files::table)
         .values((files::path.eq(relative_path), files::name.eq(name)))
         .returning(File::as_returning())
         .get_result(connection)
-        .expect("Failed to insert file");
+    {
+        Ok(res) => res,
+        Err(e) => {
+            warn!("Inserting file {name} failed: {:?}", e);
+            return Err(format!("Inserting {name} failed."));
+        }
+    };
 
     for tag in tags {
-        diesel::insert_into(file_tags::table)
+        match diesel::insert_into(file_tags::table)
             .values((file_tags::file_id.eq(file.id), file_tags::tag_id.eq(tag.id)))
             .execute(connection)
-            .expect("Failed to isnert file_tag");
+        {
+            Ok(_) => (),
+            Err(e) => {
+                warn!("Tagging file {name} with {} failed: {:?}", tag.tag, e);
+                return Err(format!("Tagging {name} with {} failed.", tag.tag));
+            }
+        };
     }
 
     Ok(())
