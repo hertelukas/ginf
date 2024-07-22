@@ -96,6 +96,37 @@ pub fn get_tag(tag_name: &String, pool: &DbPool) -> Result<Tag, String> {
     Ok(result)
 }
 
+// TODO this needs some testing
+pub fn get_files(pool: &DbPool) -> Result<Vec<(File, Vec<Tag>)>, String> {
+    use crate::schema::files;
+    use crate::schema::tags;
+    let connection = &mut pool.get().unwrap();
+
+    let all_files: Vec<File> = files::table
+        .select(File::as_select())
+        .load(connection)
+        .unwrap();
+
+    let all_used_tags: Vec<(FileTags, Tag)> = FileTags::belonging_to(&all_files)
+        .inner_join(tags::table)
+        .select((FileTags::as_select(), Tag::as_select()))
+        .load(connection)
+        .unwrap();
+
+    let grouped_tags = all_used_tags.grouped_by(&all_files);
+
+    let tags_per_file: Vec<(File, Vec<Tag>)> = all_files
+        .into_iter()
+        .zip(grouped_tags)
+        .map(|(file, file_tags)| {
+            let tags: Vec<Tag> = file_tags.into_iter().map(|(_, tag)| tag).collect();
+            (file, tags)
+        })
+        .collect();
+
+    Ok(tags_per_file)
+}
+
 pub fn insert_file(
     relative_path: &String,
     name: &String,

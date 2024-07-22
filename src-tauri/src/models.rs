@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 
-#[derive(Identifiable, Queryable, Selectable)]
+#[derive(Identifiable, Queryable, Selectable, Debug)]
 #[diesel(table_name = crate::schema::files)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct File {
@@ -9,7 +9,7 @@ pub struct File {
     pub name: String,
 }
 
-#[derive(Identifiable, Queryable, Selectable)]
+#[derive(Identifiable, Queryable, Selectable, Debug)]
 #[diesel(table_name = crate::schema::tags)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Tag {
@@ -18,7 +18,7 @@ pub struct Tag {
 }
 
 
-#[derive(Identifiable, Queryable, Selectable, Associations)]
+#[derive(Identifiable, Queryable, Selectable, Associations, Debug)]
 #[diesel(belongs_to(Tag))]
 #[diesel(belongs_to(File))]
 #[diesel(primary_key(file_id, tag_id))]
