@@ -54,7 +54,7 @@ watch(model.value, (value) => {
 </script>
 
 <template>
-    <Dialog v-model:visible="model.visible" modal header="Import File" :style="{ width: '60rem' }">
+    <Dialog v-model:visible="model.visible" modal header="Import File" :style="{ width: '60rem' }" :draggable="false">
         <div class="flex flex-column gap-2">
             <Button class="w-3" @click="openFilePicker">File</Button>
             <small>{{ file }}</small>
