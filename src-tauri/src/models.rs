@@ -1,6 +1,7 @@
 use diesel::prelude::*;
+use serde::Serialize;
 
-#[derive(Identifiable, Queryable, Selectable, Debug)]
+#[derive(Identifiable, Queryable, Selectable, Debug, Serialize)]
 #[diesel(table_name = crate::schema::files)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct File {
@@ -9,7 +10,7 @@ pub struct File {
     pub name: String,
 }
 
-#[derive(Identifiable, Queryable, Selectable, Debug)]
+#[derive(Identifiable, Queryable, Selectable, Debug, Serialize)]
 #[diesel(table_name = crate::schema::tags)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Tag {

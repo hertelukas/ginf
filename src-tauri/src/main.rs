@@ -62,6 +62,12 @@ fn import(path: String, tags: Vec<String>, pool: State<DbPool>) -> Result<(), St
     db::insert_file(&folder, &filename, &tags, &pool)
 }
 
+#[tauri::command]
+fn get_files(pool: State<DbPool>) -> Result<Vec<(models::File, Vec<models::Tag>)>, String> {
+    info!("Loading files");
+    db::get_files(&pool)
+}
+
 fn main() {
     env_logger::init();
     tauri::Builder::default()
@@ -73,7 +79,7 @@ fn main() {
             app.manage(db_pool);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![add_tag, get_tags, import])
+        .invoke_handler(tauri::generate_handler![add_tag, get_tags, import, get_files])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

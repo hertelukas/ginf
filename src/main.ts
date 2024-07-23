@@ -8,7 +8,10 @@ import App from "./App.vue";
 /* Primevue Components */
 import Button from "primevue/button";
 import ToggleButton from "primevue/togglebutton";
-import Dialog from "primevue/dialog"
+import Dialog from "primevue/dialog";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Tag from "primevue/tag";
 
 /* Styling */
 import "primeflex/primeflex.css"
@@ -72,4 +75,7 @@ app
     .component("Button", Button)
     .component("Dialog", Dialog)
     .component("ToggleButton", ToggleButton)
+    .component("DataTable", DataTable)
+    .component("Column", Column)
+    .component("Tag", Tag)
     .mount("#app");
