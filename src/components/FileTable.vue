@@ -4,7 +4,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { open } from "@tauri-apps/api/shell";
 import { resolveResource } from "@tauri-apps/api/path";
 import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
+import ImportFile from "./ImportFile.vue"
 
+const model = ref({ visible: false })
 const files = ref([]);
 const filters = ref();
 const selectedFile = ref();
@@ -49,12 +51,16 @@ invoke("get_files")
 </script>
 
 <template>
+    <ImportFile v-model="model" />
     <DataTable class="p-datatable" v-model:selection="selectedFile" selectionMode="multiple" :value="files"
         @row-dblclick="onRowClick" :metaKeySelection="true" removableSort v-model:filters="filters" filterDisplay="menu"
         :globalFilterFields="['file.name']">
         <template #header>
             <div class="flex justify-content-between">
-                <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
+                <div class="flex gap-2">
+                    <Button label="Import" icon="pi pi-file-import" @click="() => model.visible = true" outlined/>
+                    <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
+                </div>
                 <IconField>
                     <InputIcon>
                         <i class="pi pi-search" />
