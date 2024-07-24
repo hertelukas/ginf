@@ -12,9 +12,13 @@ import Dialog from "primevue/dialog";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
+import InputText from "primevue/inputtext";
+import InputIcon from "primevue/inputicon";
+import IconField from "primevue/iconfield";
 
 /* Styling */
 import "primeflex/primeflex.css"
+import "primeicons/primeicons.css"
 
 const app = createApp(App)
 
@@ -78,4 +82,7 @@ app
     .component("DataTable", DataTable)
     .component("Column", Column)
     .component("Tag", Tag)
+    .component("InputText", InputText)
+    .component("InputIcon", InputIcon)
+    .component("IconField", IconField)
     .mount("#app");

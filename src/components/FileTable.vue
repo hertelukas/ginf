@@ -3,8 +3,10 @@ import { ref, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open } from "@tauri-apps/api/shell";
 import { resolveResource } from "@tauri-apps/api/path";
+import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 
 const files = ref([]);
+const filters = ref();
 const selectedFile = ref();
 var base_path = null;
 
@@ -16,10 +18,22 @@ const onRowClick = async (event) => {
     }
     else {
         const path = base_path + "/" + event.data.file.path + "/" + event.data.file.name;
-        console.log(path)
         await open(path)
     }
 };
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'file.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+    };
+};
+
+const clearFilter = () => {
+    initFilters();
+}
+
+initFilters();
 
 invoke("get_files")
     .then((loaded) => {
@@ -36,8 +50,24 @@ invoke("get_files")
 
 <template>
     <DataTable class="p-datatable" v-model:selection="selectedFile" selectionMode="multiple" :value="files"
-        @row-dblclick="onRowClick" :metaKeySelection="true" removableSort>
-        <Column field="file.name" header="File" sortable> </Column>
+        @row-dblclick="onRowClick" :metaKeySelection="true" removableSort v-model:filters="filters" filterDisplay="menu"
+        :globalFilterFields="['file.name']">
+        <template #header>
+            <div class="flex justify-content-between">
+                <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
+                <IconField>
+                    <InputIcon>
+                        <i class="pi pi-search" />
+                    </InputIcon>
+                    <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                </IconField>
+            </div>
+        </template>
+        <Column field="file.name" header="File" sortable>
+            <template #filter="{ filterModel }">
+                <InputText v-model="filterModel.value" type="text" placeholder="Filter by name" />
+            </template>
+        </Column>
         <Column header="Tags">
             <template #body="{ data }">
                 <div class="flex gap-2">
