@@ -35,30 +35,32 @@ const clearFilter = () => {
     initFilters();
 }
 
+const initFiles = () => {
+    invoke("get_files")
+        .then((loaded) => {
+            files.value = loaded.map(item => {
+                return {
+                    file: item[0],
+                    tags: item[1],
+                }
+            });
+        })
+        .catch((err) => console.error(err));
+}
+
 initFilters();
-
-invoke("get_files")
-    .then((loaded) => {
-        files.value = loaded.map(item => {
-            return {
-                file: item[0],
-                tags: item[1],
-            }
-        });
-    })
-    .catch((err) => console.error(err));
-
+initFiles();
 </script>
 
 <template>
-    <ImportFile v-model="model" />
+    <ImportFile v-model="model" @import="initFiles()" />
     <DataTable class="p-datatable" v-model:selection="selectedFile" selectionMode="multiple" :value="files"
         @row-dblclick="onRowClick" :metaKeySelection="true" removableSort v-model:filters="filters" filterDisplay="menu"
         :globalFilterFields="['file.name']">
         <template #header>
             <div class="flex justify-content-between">
                 <div class="flex gap-2">
-                    <Button label="Import" icon="pi pi-file-import" @click="() => model.visible = true" outlined/>
+                    <Button label="Import" icon="pi pi-file-import" @click="() => model.visible = true" outlined />
                     <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()" />
                 </div>
                 <IconField>

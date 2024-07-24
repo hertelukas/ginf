@@ -10,6 +10,8 @@ const file = ref("");
 const tags = ref([]);
 const active = ref([])
 
+const emit = defineEmits(['import'])
+
 async function openFilePicker() {
     const selected = await open({
         multiple: false,
@@ -32,7 +34,10 @@ function submit() {
         path: file.value,
         tags: tags_to_submit,
     })
-        .then(() => console.log("Imported"))
+        .then(() => {
+            console.log("Imported");
+            emit('import')
+        })
         // TODO handle error
         .catch((err) => console.error(err));
 }
