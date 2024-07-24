@@ -1,7 +1,25 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/api/shell";
+import { resolveResource } from "@tauri-apps/api/path";
+
 const files = ref([]);
+const selectedFile = ref();
+var base_path = null;
+
+const onRowClick = async (event) => {
+    if (base_path == null) {
+        invoke("get_path")
+            .then((path) => { base_path = path; onRowClick(event) })
+            .catch((err) => console.error(err));
+    }
+    else {
+        const path = base_path + "/" + event.data.file.path + "/" + event.data.file.name;
+        console.log(path)
+        await open(path)
+    }
+};
 
 invoke("get_files")
     .then((loaded) => {
@@ -17,7 +35,8 @@ invoke("get_files")
 </script>
 
 <template>
-    <DataTable class="border-round" :value="files">
+    <DataTable class="p-datatable" v-model:selection="selectedFile" selectionMode="multiple" :value="files"
+        @row-dblclick="onRowClick" :metaKeySelection="true" removableSort>
         <Column field="file.name" header="File" sortable> </Column>
         <Column header="Tags">
             <template #body="{ data }">
@@ -28,3 +47,12 @@ invoke("get_files")
         </Column>
     </DataTable>
 </template>
+
+<style scoped>
+.p-datatable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+</style>

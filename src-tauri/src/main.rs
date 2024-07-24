@@ -19,6 +19,12 @@ use tauri::{Manager, State};
 type DbPool = Pool<ConnectionManager<SqliteConnection>>;
 
 #[tauri::command]
+fn get_path(config: State<config::Config>) -> Result<String, String> {
+    info!("Loading path");
+    Ok(config.folder.clone())
+}
+
+#[tauri::command]
 fn add_tag(tag: &str) -> Result<(), String> {
     info!("Adding tag {tag}");
     Ok(())
@@ -77,9 +83,12 @@ fn main() {
             db::run_migrations(&db_pool);
             info!("Running in {}", config.folder);
             app.manage(db_pool);
+            app.manage(config);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![add_tag, get_tags, import, get_files])
+        .invoke_handler(tauri::generate_handler![
+            add_tag, get_tags, import, get_files, get_path
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
