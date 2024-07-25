@@ -13,8 +13,8 @@ const active = ref([])
 
 const emit = defineEmits(['import'])
 
-const uniqueNewTag = computed(() => {
-    return tags.value.includes(newTag.value);
+const invalidNewTag = computed(() => {
+    return newTag.value === "" || tags.value.includes(newTag.value);
 })
 
 const invalidImport = computed(() => {
@@ -52,7 +52,7 @@ function submit() {
 }
 
 function insertTag() {
-    if (tags.value.includes(newTag.value)) {
+    if (invalidNewTag) {
         return;
     }
     invoke("insert_tag", {
@@ -84,7 +84,7 @@ watch(model.value, (value) => {
 <template>
     <Dialog v-model:visible="model.visible" modal header="Import File" :style="{ width: '60rem' }" :draggable="false">
         <div class="flex flex-column gap-2">
-            <Button class="w-3" @click="openFilePicker">File</Button>
+            <Button icon="pi pi-file" class="w-3" @click="openFilePicker" label="File"/>
             <small>{{ file }}</small>
         </div>
 
@@ -94,10 +94,10 @@ watch(model.value, (value) => {
                 <ToggleButton v-model="active[index]" :onLabel="tag" :offLabel="tag" />
             </div>
             <InputText class="w-6rem" type="text" v-model="newTag" @keydown.enter="insertTag" />
-            <Button icon="pi pi-plus" :disabled="uniqueNewTag" @click="insertTag" />
+            <Button icon="pi pi-plus" :disabled="invalidNewTag" @click="insertTag" />
         </div>
 
-        <Button class="w-3 mt-3" @click="submit" :disabled="invalidImport">Import</Button>
+        <Button icon="pi pi-file-import" class="w-3 mt-3" @click="submit" :disabled="invalidImport" label="Import" />
     </Dialog>
 
 </template>
