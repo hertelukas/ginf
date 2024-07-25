@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {
     pub folder: String,
-    pub tags: Vec<String>,
 }
 
 impl Config {
