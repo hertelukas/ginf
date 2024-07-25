@@ -78,7 +78,7 @@ initFiles();
         </Column>
         <Column header="Tags">
             <template #body="{ data }">
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <Tag severity="success" v-for="tag in data.tags">{{ tag.tag }}</Tag>
                 </div>
             </template>
