@@ -54,7 +54,7 @@ initFiles();
 
 <template>
     <ImportFile v-model="model" @import="initFiles()" />
-    <DataTable class="p-datatable" v-model:selection="selectedFile" selectionMode="multiple" :value="files"
+    <DataTable v-model:selection="selectedFile" selectionMode="multiple" :value="files"
         @row-dblclick="onRowClick" :metaKeySelection="true" removableSort v-model:filters="filters" filterDisplay="menu"
         :globalFilterFields="['file.name']">
         <template #header>
@@ -85,12 +85,3 @@ initFiles();
         </Column>
     </DataTable>
 </template>
-
-<style scoped>
-.p-datatable {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-</style>
