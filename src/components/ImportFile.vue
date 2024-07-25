@@ -17,6 +17,10 @@ const uniqueNewTag = computed(() => {
     return tags.value.includes(newTag.value);
 })
 
+const invalidImport = computed(() => {
+    return file.value === "";
+})
+
 async function openFilePicker() {
     const selected = await open({
         multiple: false,
@@ -93,7 +97,7 @@ watch(model.value, (value) => {
             <Button icon="pi pi-plus" :disabled="uniqueNewTag" @click="insertTag" />
         </div>
 
-        <Button class="w-3 mt-3" @click="submit">Import</Button>
+        <Button class="w-3 mt-3" @click="submit" :disabled="invalidImport">Import</Button>
     </Dialog>
 
 </template>
