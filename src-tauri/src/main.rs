@@ -25,9 +25,9 @@ fn get_path(config: State<config::Config>) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn add_tag(tag: &str) -> Result<(), String> {
+fn insert_tag(tag: String, pool: State<DbPool>) -> Result<(), String> {
     info!("Adding tag {tag}");
-    Ok(())
+    db::insert_tag(&tag, &pool)
 }
 
 #[tauri::command]
@@ -87,7 +87,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            add_tag, get_tags, import, get_files, get_path
+            insert_tag, get_tags, import, get_files, get_path
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -167,3 +167,19 @@ pub fn insert_file(
 
     Ok(())
 }
+
+pub fn insert_tag(tag: &String, pool: &DbPool) -> Result<(), String> {
+    use crate::schema::tags;
+    let connection = &mut pool.get().unwrap();
+
+    match diesel::insert_into(tags::table)
+        .values(tags::tag.eq(tag))
+        .execute(connection)
+    {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            warn!("Inserting tag {tag} failed: {e:?}");
+            Err(format!("Inserting tag {tag} failed."))
+        }
+    }
+}
