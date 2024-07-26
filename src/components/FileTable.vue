@@ -18,7 +18,7 @@ const TAGS_FILTER = ref("TAG_FILTER");
 FilterService.register(TAGS_FILTER.value, (value, filter): boolean => {
     return filter.every((filter_tag) => {
         return value.some((tag) => {
-            return tag.tag.toLowerCase().includes(filter_tag.toLowerCase());
+            return tag.tag.toLowerCase() === filter_tag.toLowerCase();
         });
     });
 });
