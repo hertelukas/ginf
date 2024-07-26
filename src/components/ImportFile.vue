@@ -52,7 +52,7 @@ function submit() {
 }
 
 function insertTag() {
-    if (invalidNewTag) {
+    if (invalidNewTag.value) {
         return;
     }
     invoke("insert_tag", {
@@ -84,7 +84,7 @@ watch(model.value, (value) => {
 <template>
     <Dialog v-model:visible="model.visible" modal header="Import File" :style="{ width: '60rem' }" :draggable="false">
         <div class="flex flex-column gap-2">
-            <Button icon="pi pi-file" class="w-3" @click="openFilePicker" label="File"/>
+            <Button icon="pi pi-file" class="w-3" @click="openFilePicker" label="File" />
             <small>{{ file }}</small>
         </div>
 
