@@ -15,6 +15,8 @@ import Tag from "primevue/tag";
 import InputText from "primevue/inputtext";
 import InputIcon from "primevue/inputicon";
 import IconField from "primevue/iconfield";
+import Select from "primevue/select";
+import MultiSelect from "primevue/multiselect";
 
 /* Styling */
 import "primeflex/primeflex.css"
@@ -85,4 +87,6 @@ app
     .component("InputText", InputText)
     .component("InputIcon", InputIcon)
     .component("IconField", IconField)
+    .component("Select", Select)
+    .component("MultiSelect", MultiSelect)
     .mount("#app");
