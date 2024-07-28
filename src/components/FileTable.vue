@@ -13,9 +13,10 @@ const selectedFile = ref();
 const unique_tags = ref([]);
 var base_path = null;
 
-const TAGS_FILTER = ref("TAG_FILTER");
+const ALL_TAGS = ref("ALL_TAGS_FILTER");
+const ANY_TAGS = ref("ANY_TAGS_FILTER");
 
-FilterService.register(TAGS_FILTER.value, (value, filter): boolean => {
+FilterService.register(ALL_TAGS.value, (value, filter): boolean => {
     return filter.every((filter_tag) => {
         return value.some((tag) => {
             return tag.tag.toLowerCase() === filter_tag.toLowerCase();
@@ -23,7 +24,19 @@ FilterService.register(TAGS_FILTER.value, (value, filter): boolean => {
     });
 });
 
-const tagsContainMatchModes = [{ label: "Contains", value: TAGS_FILTER.value }]
+FilterService.register(ANY_TAGS.value, (value, filter): boolean => {
+    return filter.some((filter_tag) => {
+        return value.some((tag) => {
+            return tag.tag.toLowerCase() === filter_tag.toLowerCase();
+        });
+    });
+});
+
+// TODO this does not seem to work
+const tagsContainMatchModes = [
+    { label: "Contains all", value: ALL_TAGS.value },
+    { label: "Has any", value: ANY_TAGS.value },
+]
 
 const onRowClick = async (event) => {
     if (base_path == null) {
@@ -41,7 +54,7 @@ const initFilters = () => {
     filters.value = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         'file.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        tags: { value: null, matchMode: TAGS_FILTER.value }
+        tags: { value: null, matchMode: ALL_TAGS.value }
     };
 };
 
